@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
+import pettyCashRoutes from "./routes/pettyCashRoutes.js";
 
 import { connectDB } from "./lib/db.js";
 
@@ -24,6 +25,9 @@ app.use("/api/books", bookRoutes);
 // POS routes
 app.use("/api/products", productRoutes);
 app.use("/api/sales", saleRoutes);
+
+//petty cash
+app.use("/api/pettycash", pettyCashRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
