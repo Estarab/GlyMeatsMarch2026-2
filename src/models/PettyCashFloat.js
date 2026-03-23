@@ -1,10 +1,16 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const PettyCashFloatSchema = new mongoose.Schema({
-  issuedAmount: { type: Number, required: true },
-  remainingBalance: { type: Number, required: true },
-  issuedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  issuedAt: { type: Date, default: Date.now }
-});
+const PettyCashFloatSchema = new mongoose.Schema(
+  {
+    issuedAmount: { type: Number, default: 0 },
+    remainingBalance: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("PettyCashFloat", PettyCashFloatSchema);
+const PettyCashFloat = mongoose.model(
+  "PettyCashFloat",
+  PettyCashFloatSchema
+);
+
+export default PettyCashFloat;

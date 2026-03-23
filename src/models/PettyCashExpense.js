@@ -1,13 +1,17 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const PettyCashExpenseSchema = new mongoose.Schema({
-  amount: Number,
-  reason: String,
-  status: { type: String, default: "pending" },
-  requestedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  floatId: { type: mongoose.Schema.Types.ObjectId, ref: "PettyCashFloat" },
-  createdAt: { type: Date, default: Date.now }
-});
+const PettyCashExpenseSchema = new mongoose.Schema(
+  {
+    amount: { type: Number, required: true },
+    reason: { type: String, required: true },
+    approved: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("PettyCashExpense", PettyCashExpenseSchema);
+const PettyCashExpense = mongoose.model(
+  "PettyCashExpense",
+  PettyCashExpenseSchema
+);
+
+export default PettyCashExpense;
