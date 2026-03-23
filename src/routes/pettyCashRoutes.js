@@ -2,6 +2,7 @@ import express from "express";
 import {
   getExpenses,
   approveExpense,
+  createExpense,
   getFloat,
   createFloat,
 } from "../controllers/pettyCashController.js";
