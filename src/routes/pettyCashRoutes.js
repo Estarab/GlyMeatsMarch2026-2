@@ -1,0 +1,17 @@
+import express from "express";
+import {
+  getExpenses,
+  approveExpense,
+  getFloat,
+  createFloat,
+} from "../controllers/pettyCashController.js";
+
+const router = express.Router();
+
+router.get("/expenses", getExpenses);
+router.put("/expenses/:id/approve", approveExpense);
+
+router.get("/float", getFloat);
+router.post("/float", createFloat);
+
+export default router;

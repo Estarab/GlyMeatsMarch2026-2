@@ -1,17 +1,26 @@
 import mongoose from "mongoose";
 
-const PettyCashExpenseSchema = new mongoose.Schema(
+const pettyCashExpenseSchema = new mongoose.Schema(
   {
-    amount: { type: Number, required: true },
-    reason: { type: String, required: true },
-    approved: { type: Boolean, default: false },
+    reason: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved"],
+      default: "pending",
+    },
+    approvedAt: Date,
   },
   { timestamps: true }
 );
 
-const PettyCashExpense = mongoose.model(
+export default mongoose.model(
   "PettyCashExpense",
-  PettyCashExpenseSchema
+  pettyCashExpenseSchema
 );
-
-export default PettyCashExpense;

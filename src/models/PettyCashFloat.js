@@ -1,16 +1,20 @@
 import mongoose from "mongoose";
 
-const PettyCashFloatSchema = new mongoose.Schema(
+const pettyCashFloatSchema = new mongoose.Schema(
   {
-    issuedAmount: { type: Number, default: 0 },
-    remainingBalance: { type: Number, default: 0 },
+    issuedAmount: {
+      type: Number,
+      default: 0,
+    },
+    remainingBalance: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
-const PettyCashFloat = mongoose.model(
+export default mongoose.model(
   "PettyCashFloat",
-  PettyCashFloatSchema
+  pettyCashFloatSchema
 );
-
-export default PettyCashFloat;
