@@ -22,7 +22,13 @@ router.get("/float", async (req, res) => {
  */
 router.post("/float", async (req, res) => {
   try {
+    console.log("BODY:", req.body);  // for debugging
+
     const { amount } = req.body;
+
+    if (!amount || isNaN(amount)) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
 
     let float = await PettyCashFloat.findOne();
 
@@ -37,6 +43,7 @@ router.post("/float", async (req, res) => {
     }
 
     await float.save();
+
     res.status(200).json(float);
   } catch (error) {
     console.log("Error issuing float:", error);
