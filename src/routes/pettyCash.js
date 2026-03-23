@@ -1,5 +1,6 @@
 import express from "express";
-import PettyCash from "../models/PettyCash.js";
+import PettyCashFloat from "../models/PettyCashFloat.js";
+import PettyCashExpense from "../models/PettyCashExpense.js";
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const router = express.Router();
  */
 router.get("/float", async (req, res) => {
   try {
-    const float = await PettyCash.findOne({ type: "float" });
+    const float = await PettyCashFloat.findOne();
     res.status(200).json(float);
   } catch (error) {
     console.log("Error fetching float:", error);
@@ -23,15 +24,10 @@ router.post("/float", async (req, res) => {
   try {
     const { amount } = req.body;
 
-    if (!amount) {
-      return res.status(400).json({ message: "Amount is required" });
-    }
-
-    let float = await PettyCash.findOne({ type: "float" });
+    let float = await PettyCashFloat.findOne();
 
     if (!float) {
-      float = new PettyCash({
-        type: "float",
+      float = new PettyCashFloat({
         issuedAmount: amount,
         remainingBalance: amount,
       });
@@ -49,25 +45,19 @@ router.post("/float", async (req, res) => {
 });
 
 /**
- * Create petty cash expense (cashier)
+ * Create expense
  */
 router.post("/expense", async (req, res) => {
   try {
     const { amount, reason } = req.body;
 
-    if (!amount || !reason) {
-      return res.status(400).json({ message: "Amount and reason required" });
-    }
-
-    const expense = new PettyCash({
-      type: "expense",
+    const expense = new PettyCashExpense({
       amount,
       reason,
       approved: false,
     });
 
     await expense.save();
-
     res.status(201).json(expense);
   } catch (error) {
     console.log("Error creating expense:", error);
@@ -76,15 +66,11 @@ router.post("/expense", async (req, res) => {
 });
 
 /**
- * Get pending expenses (director view)
+ * Get pending expenses
  */
 router.get("/expenses", async (req, res) => {
   try {
-    const expenses = await PettyCash.find({
-      type: "expense",
-      approved: false,
-    }).sort({ createdAt: -1 });
-
+    const expenses = await PettyCashExpense.find({ approved: false });
     res.status(200).json(expenses);
   } catch (error) {
     console.log("Error fetching expenses:", error);
@@ -93,32 +79,26 @@ router.get("/expenses", async (req, res) => {
 });
 
 /**
- * Approve expense (director)
+ * Approve expense
  */
 router.put("/expense/:id/approve", async (req, res) => {
   try {
-    const expense = await PettyCash.findById(req.params.id);
-    if (!expense) {
-      return res.status(404).json({ message: "Expense not found" });
-    }
+    const expense = await PettyCashExpense.findById(req.params.id);
+    const float = await PettyCashFloat.findOne();
 
-    const float = await PettyCash.findOne({ type: "float" });
-    if (!float) {
-      return res.status(400).json({ message: "No petty cash float available" });
-    }
+    if (!expense || !float)
+      return res.status(404).json({ message: "Expense or float not found" });
 
-    if (float.remainingBalance < expense.amount) {
+    if (float.remainingBalance < expense.amount)
       return res.status(400).json({ message: "Insufficient float balance" });
-    }
 
-    // approve and deduct
     expense.approved = true;
     float.remainingBalance -= expense.amount;
 
     await expense.save();
     await float.save();
 
-    res.status(200).json({ message: "Expense approved", expense });
+    res.json({ message: "Expense approved" });
   } catch (error) {
     console.log("Error approving expense:", error);
     res.status(500).json({ message: "Failed to approve expense" });
