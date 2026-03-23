@@ -22,9 +22,10 @@ router.get("/float", async (req, res) => {
  */
 router.post("/float", async (req, res) => {
   try {
-    console.log("BODY:", req.body);  // for debugging
+    console.log("BODY RECEIVED:", req.body);
 
     const { amount } = req.body;
+    console.log("Parsed amount:", amount);
 
     if (!amount || isNaN(amount)) {
       return res.status(400).json({ message: "Invalid amount" });
@@ -43,6 +44,7 @@ router.post("/float", async (req, res) => {
     }
 
     await float.save();
+    console.log("Float saved:", float);
 
     res.status(200).json(float);
   } catch (error) {
@@ -50,7 +52,6 @@ router.post("/float", async (req, res) => {
     res.status(500).json({ message: "Failed to issue float" });
   }
 });
-
 /**
  * Create expense
  */
