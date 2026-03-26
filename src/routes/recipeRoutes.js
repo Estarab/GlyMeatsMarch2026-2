@@ -7,8 +7,7 @@ import {
   deleteRecipe,
 } from "../controllers/recipeController.js";
 
-import auth from "../middleware/auth.js";
-import admin from "../middleware/admin.js";
+import { protectRoute, adminOnly } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,19 +15,19 @@ const router = express.Router();
 // PRODUCT RECIPES (BOM)
 // ===============================
 
-// get all recipes
-router.get("/", auth, getRecipes);
+// get all recipes (any authenticated user)
+router.get("/", protectRoute, getRecipes);
 
 // get single recipe
-router.get("/:id", auth, getRecipeById);
+router.get("/:id", protectRoute, getRecipeById);
 
-// create recipe
-router.post("/", auth, admin, createRecipe);
+// create recipe (admin only)
+router.post("/", protectRoute, adminOnly, createRecipe);
 
-// update recipe
-router.put("/:id", auth, admin, updateRecipe);
+// update recipe (admin only)
+router.put("/:id", protectRoute, adminOnly, updateRecipe);
 
-// delete recipe
-router.delete("/:id", auth, admin, deleteRecipe);
+// delete recipe (admin only)
+router.delete("/:id", protectRoute, adminOnly, deleteRecipe);
 
 export default router;

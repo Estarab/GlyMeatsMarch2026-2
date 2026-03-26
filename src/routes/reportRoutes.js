@@ -6,8 +6,7 @@ import {
   getProfitReport,
 } from "../controllers/reportController.js";
 
-import auth from "../middleware/auth.js";
-import admin from "../middleware/admin.js";
+import { protectRoute, adminOnly } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -15,16 +14,16 @@ const router = express.Router();
 // ANALYTICS & REPORTING
 // ===============================
 
-// production report (date range)
-router.get("/production", auth, getProductionReport);
+// production report (date range) - any authenticated user
+router.get("/production", protectRoute, getProductionReport);
 
-// low stock reorder suggestions
-router.get("/reorder", auth, getReorderReport);
+// low stock / reorder suggestions - any authenticated user
+router.get("/reorder", protectRoute, getReorderReport);
 
-// material usage analytics
-router.get("/materials", auth, getMaterialUsageReport);
+// material usage analytics - any authenticated user
+router.get("/materials", protectRoute, getMaterialUsageReport);
 
-// profit report (admin only)
-router.get("/profit", auth, admin, getProfitReport);
+// profit report - admin only
+router.get("/profit", protectRoute, adminOnly, getProfitReport);
 
 export default router;

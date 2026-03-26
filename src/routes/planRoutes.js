@@ -7,8 +7,7 @@ import {
   markPlanCompleted,
 } from "../controllers/planController.js";
 
-import auth from "../middleware/auth.js";
-import admin from "../middleware/admin.js";
+import { protectRoute, adminOnly } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,19 +15,19 @@ const router = express.Router();
 // PRODUCTION PLANNING CALENDAR
 // ===============================
 
-// list all plans
-router.get("/", auth, getProductionPlans);
+// list all plans (any authenticated user)
+router.get("/", protectRoute, getProductionPlans);
 
-// create plan
-router.post("/", auth, admin, createProductionPlan);
+// create plan (admin only)
+router.post("/", protectRoute, adminOnly, createProductionPlan);
 
-// update plan
-router.put("/:id", auth, admin, updateProductionPlan);
+// update plan (admin only)
+router.put("/:id", protectRoute, adminOnly, updateProductionPlan);
 
-// delete plan
-router.delete("/:id", auth, admin, deleteProductionPlan);
+// delete plan (admin only)
+router.delete("/:id", protectRoute, adminOnly, deleteProductionPlan);
 
-// mark plan completed
-router.put("/:id/complete", auth, admin, markPlanCompleted);
+// mark plan completed (admin only)
+router.put("/:id/complete", protectRoute, adminOnly, markPlanCompleted);
 
 export default router;

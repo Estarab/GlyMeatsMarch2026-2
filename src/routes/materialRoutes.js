@@ -8,8 +8,7 @@ import {
   restockMaterial,
 } from "../controllers/materialController.js";
 
-import auth from "../middleware/auth.js";
-import admin from "../middleware/admin.js";
+import { protectRoute, adminOnly } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -17,22 +16,22 @@ const router = express.Router();
 // RAW MATERIAL INVENTORY
 // ===============================
 
-// get all materials
-router.get("/", auth, getRawMaterials);
+// get all materials (any authenticated user)
+router.get("/", protectRoute, getRawMaterials);
 
 // get single material
-router.get("/:id", auth, getMaterialById);
+router.get("/:id", protectRoute, getMaterialById);
 
-// create new material
-router.post("/", auth, admin, createMaterial);
+// create new material (admin only)
+router.post("/", protectRoute, adminOnly, createMaterial);
 
-// update material details
-router.put("/:id", auth, admin, updateMaterial);
+// update material details (admin only)
+router.put("/:id", protectRoute, adminOnly, updateMaterial);
 
-// delete material
-router.delete("/:id", auth, admin, deleteMaterial);
+// delete material (admin only)
+router.delete("/:id", protectRoute, adminOnly, deleteMaterial);
 
-// restock material (adds quantity + logs purchase)
-router.post("/:id/restock", auth, admin, restockMaterial);
+// restock material (adds quantity + logs purchase) (admin only)
+router.post("/:id/restock", protectRoute, adminOnly, restockMaterial);
 
 export default router;
