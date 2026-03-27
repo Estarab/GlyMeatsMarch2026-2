@@ -1,20 +1,35 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const RecipeMaterialSchema = new mongoose.Schema({
   material: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "RawMaterial",
+    required: true,
   },
-  quantityPerUnit: Number,
+  quantityPerUnit: {
+    type: Number,
+    required: true,
+  },
 });
 
 const ProductRecipeSchema = new mongoose.Schema(
   {
-    productName: { type: String, required: true, unique: true },
-    unit: { type: String, default: "kg" },
+    productName: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    unit: {
+      type: String,
+      default: "kg",
+    },
     materials: [RecipeMaterialSchema],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ProductRecipe", ProductRecipeSchema);
+// Named export
+export const ProductRecipe = mongoose.model(
+  "ProductRecipe",
+  ProductRecipeSchema
+);

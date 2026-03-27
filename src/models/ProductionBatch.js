@@ -1,26 +1,41 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ProductionBatchSchema = new mongoose.Schema(
   {
-    productName: String,
-    quantityProduced: Number,
+    productName: {
+      type: String,
+      required: true,
+    },
+    quantityProduced: {
+      type: Number,
+      required: true,
+    },
 
     materialsUsed: [
       {
         material: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "RawMaterial",
+          required: true,
         },
-        quantityUsed: Number,
+        quantityUsed: {
+          type: Number,
+          required: true,
+        },
       },
     ],
 
     producedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ProductionBatch", ProductionBatchSchema);
+// Named export (ESM)
+export const ProductionBatch = mongoose.model(
+  "ProductionBatch",
+  ProductionBatchSchema
+);

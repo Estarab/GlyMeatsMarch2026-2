@@ -15,12 +15,15 @@ const pettyCashExpenseSchema = new mongoose.Schema(
       enum: ["pending", "approved"],
       default: "pending",
     },
-    approvedAt: Date,
+    approvedAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model(
+// Named export instead of default
+export const PettyCashExpense = mongoose.model(
   "PettyCashExpense",
   pettyCashExpenseSchema
 );

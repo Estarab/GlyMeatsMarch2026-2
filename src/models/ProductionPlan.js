@@ -1,10 +1,19 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const ProductionPlanSchema = new mongoose.Schema(
   {
-    productName: { type: String, required: true },
-    plannedQuantity: Number,
-    plannedDate: Date,
+    productName: {
+      type: String,
+      required: true,
+    },
+    plannedQuantity: {
+      type: Number,
+      required: true,
+    },
+    plannedDate: {
+      type: Date,
+      required: true,
+    },
     status: {
       type: String,
       enum: ["PLANNED", "COMPLETED", "CANCELLED"],
@@ -13,9 +22,14 @@ const ProductionPlanSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ProductionPlan", ProductionPlanSchema);
+// Named export
+export const ProductionPlan = mongoose.model(
+  "ProductionPlan",
+  ProductionPlanSchema
+);

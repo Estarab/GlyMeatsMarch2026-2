@@ -14,7 +14,8 @@ const pettyCashFloatSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model(
+// Named export
+export const PettyCashFloat = mongoose.model(
   "PettyCashFloat",
   pettyCashFloatSchema
 );

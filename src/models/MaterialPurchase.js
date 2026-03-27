@@ -1,16 +1,30 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const MaterialPurchaseSchema = new mongoose.Schema(
   {
     material: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "RawMaterial",
+      required: true,
     },
-    quantity: Number,
-    cost: Number,
-    supplier: String,
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    cost: {
+      type: Number,
+      required: true,
+    },
+    supplier: {
+      type: String,
+      default: "Unknown",
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("MaterialPurchase", MaterialPurchaseSchema);
+// Named ES module export
+export const MaterialPurchase = mongoose.model(
+  "MaterialPurchase",
+  MaterialPurchaseSchema
+);
