@@ -1,4 +1,5 @@
-import ProductionPlan from "../models/ProductionPlan.js";
+// import ProductionPlan from "../models/ProductionPlan.js";
+import { ProductionPlan } from "../models/ProductionPlan.js";
 
 export const getProductionPlans = async (req, res) => {
   const plans = await ProductionPlan.find().sort({ plannedDate: 1 });

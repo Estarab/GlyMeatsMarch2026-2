@@ -1,5 +1,5 @@
-import PettyCashExpense from "../models/PettyCashExpense.js";
-import PettyCashFloat from "../models/PettyCashFloat.js";
+ import { PettyCashExpense } from "../models/PettyCashExpense.js";
+import { PettyCashFloat } from "../models/PettyCashFloat.js";
 
 /* =========================================
    GET ALL PENDING EXPENSES
