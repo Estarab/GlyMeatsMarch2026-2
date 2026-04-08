@@ -2,10 +2,13 @@ import { Sale } from "../models/Sale.js";
 import { Product } from "../models/Product.js";
 
 // GET /api/sales
+// GET /api/sales
 export const getSales = async (req, res) => {
   try {
     const sales = await Sale.find()
-      .populate("items.product")
+      // Populate product with only name and price
+      .populate("items.product", "name price")
+      // Populate user but exclude password
       .populate("user", "-password");
 
     res.json(sales);
@@ -14,6 +17,18 @@ export const getSales = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch sales" });
   }
 };
+// export const getSales = async (req, res) => {
+//   try {
+//     const sales = await Sale.find()
+//       .populate("items.product")
+//       .populate("user", "-password");
+
+//     res.json(sales);
+//   } catch (error) {
+//     console.error("Get sales error:", error);
+//     res.status(500).json({ message: "Failed to fetch sales" });
+//   }
+// };
 
 // POST /api/sales
 export const createSale = async (req, res) => {
