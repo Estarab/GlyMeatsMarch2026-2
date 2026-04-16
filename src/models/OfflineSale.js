@@ -1,30 +1,41 @@
-import mongoose from "mongoose";
-
-const offlineSaleSchema = new mongoose.Schema(
+const saleSchema = new mongoose.Schema(
   {
-    deviceId: String, // optional tracking
-    total: Number,
-    paymentMethod: String,
+    clientId: {
+      type: String,
+      unique: true, // 🔥 prevents duplicate sync
+      required: true,
+    },
+
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
     items: [
       {
-        productId: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
         },
-        productName: String,
         quantity: Number,
         price: Number,
       },
     ],
 
+    total: Number,
+
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "card"],
+      default: "cash",
+    },
+
     synced: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   { timestamps: true }
 );
-
-export const OfflineSale = mongoose.model("OfflineSale", offlineSaleSchema);
