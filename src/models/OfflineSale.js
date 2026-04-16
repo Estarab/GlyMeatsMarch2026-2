@@ -2,38 +2,26 @@ import mongoose from "mongoose";
 
 const offlineSaleSchema = new mongoose.Schema(
   {
-    source: {
-      type: String,
-      default: "offline-sync",
-    },
-
-    total: {
-      type: Number,
-      required: true,
-    },
-
-    paymentMethod: {
-      type: String,
-      enum: ["cash", "card"],
-      default: "cash",
-    },
+    deviceId: String, // optional tracking
+    total: Number,
+    paymentMethod: String,
 
     items: [
       {
         productId: {
-          type: String,
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
           required: true,
         },
         productName: String,
         quantity: Number,
         price: Number,
-        lineTotal: Number,
       },
     ],
 
-    syncedAt: {
-      type: Date,
-      default: Date.now,
+    synced: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

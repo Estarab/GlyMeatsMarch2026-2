@@ -1,82 +1,69 @@
 import { OfflineSale } from "../models/OfflineSale.js";
 import { Product } from "../models/Product.js";
 
-// ===================== SYNC OFFLINE SALE =====================
-export const syncOfflineSale = async (req, res) => {
+// ===================== SYNC OFFLINE SALES =====================
+export const syncOfflineSales = async (req, res) => {
   try {
-    const { items, total, paymentMethod } = req.body;
+    const { sales } = req.body;
 
-    if (!items || !items.length) {
-      return res.status(400).json({ message: "No items found" });
+    if (!Array.isArray(sales) || sales.length === 0) {
+      return res.status(400).json({ message: "No sales to sync" });
     }
 
-    const normalizedItems = [];
+    const savedSales = [];
 
-    // ===================== VALIDATE + ENRICH ITEMS =====================
-    for (const item of items) {
-      const productId = item.product || item.productId || item.id;
+    for (const sale of sales) {
+      const { items, total, paymentMethod } = sale;
 
-      const product = await Product.findById(productId);
+      if (!items?.length) continue;
 
-      if (!product) {
-        return res.status(404).json({
-          message: `Product not found: ${productId}`,
+      // validate stock
+      for (const item of items) {
+        const product = await Product.findById(item.productId);
+
+        if (!product) {
+          return res.status(404).json({
+            message: `Product not found: ${item.productId}`,
+          });
+        }
+
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            message: `Insufficient stock for ${product.name}`,
+          });
+        }
+      }
+
+      // reduce stock
+      for (const item of items) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity },
         });
       }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `Insufficient stock for ${product.name}`,
-        });
-      }
-
-      const lineTotal = item.price * item.quantity;
-
-      normalizedItems.push({
-        productId: product._id,
-        productName: product.name,
-        quantity: item.quantity,
-        price: item.price || product.price,
-        lineTotal,
+      // save offline sale
+      const newSale = await OfflineSale.create({
+        total,
+        paymentMethod,
+        items,
       });
+
+      savedSales.push(newSale);
     }
 
-    // ===================== REDUCE STOCK =====================
-    for (const item of normalizedItems) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { stock: -item.quantity },
-      });
-    }
-
-    // ===================== SAVE OFFLINE SALE =====================
-    const sale = await OfflineSale.create({
-      items: normalizedItems,
-      total,
-      paymentMethod,
+    res.status(201).json({
+      message: "Offline sales synced successfully",
+      count: savedSales.length,
+      data: savedSales,
     });
-
-    return res.status(201).json({
-      success: true,
-      message: "Offline sale synced successfully",
-      sale,
-    });
-  } catch (error) {
-    console.error("Offline sync error:", error);
-    res.status(500).json({
-      message: "Sync failed",
-      error: error.message,
-    });
+  } catch (err) {
+    console.error("SYNC ERROR:", err);
+    res.status(500).json({ message: "Sync failed" });
   }
 };
 
-// ===================== GET ALL OFFLINE SALES =====================
+// ===================== GET OFFLINE SALES =====================
 export const getOfflineSales = async (req, res) => {
-  try {
-    const sales = await OfflineSale.find().sort({ createdAt: -1 });
-    res.json(sales);
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch offline sales",
-    });
-  }
+  const sales = await OfflineSale.find().sort({ createdAt: -1 });
+  res.json(sales);
 };
