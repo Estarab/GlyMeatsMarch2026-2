@@ -1,5 +1,5 @@
 import express from "express";
-import { syncOfflineSales } from "../controllers/offlineSalesController.js";
+import { syncOfflineSales } from "../controllers/offlineSaleController.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
