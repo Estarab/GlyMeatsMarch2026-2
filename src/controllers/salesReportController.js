@@ -1,7 +1,6 @@
-const SalesReport = require("../models/SalesReport");
+import SalesReport from "../models/SalesReport.js";
 
-// SAVE BULK REPORTS
-exports.saveReports = async (req, res) => {
+export const saveReports = async (req, res) => {
   try {
     const reports = req.body;
 

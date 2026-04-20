@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const SalesReportSchema = new mongoose.Schema(
   {
@@ -17,4 +17,4 @@ const SalesReportSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("SalesReport", SalesReportSchema);
+export default mongoose.model("SalesReport", SalesReportSchema);

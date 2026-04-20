@@ -1,11 +1,8 @@
-const express = require("express");
+import express from "express";
+import { saveReports } from "../controllers/salesReportController.js";
+
 const router = express.Router();
 
-const {
-  saveReports,
-} = require("../controllers/salesReportController");
-
-// POST /api/reports/save
 router.post("/save", saveReports);
 
-module.exports = router;
+export default router;
