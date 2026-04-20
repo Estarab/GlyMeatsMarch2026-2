@@ -22,6 +22,9 @@ import reportRoutes from "./routes/reportRoutes.js";
 import materialRoutes from "./routes/materialRoutes.js";
 import recipeRoutes from "./routes/recipeRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
+import salesReportRoutes  from "./routes/salesReportRoutes.js";
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -77,6 +80,8 @@ app.use("/api/plans", planRoutes);
 
 // reporting & analytics
 app.use("/api/reports", reportRoutes);
+
+app.use("/api/reports", salesReportRoutes);
 
 // =====================
 // HEALTH CHECK
