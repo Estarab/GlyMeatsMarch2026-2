@@ -13,6 +13,7 @@ import bookRoutes from "./routes/bookRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
 import pettyCashRoutes from "./routes/pettyCashRoutes.js";
+import offlineSaleRoutes from "./routes/offlineSaleRoutes.js";
 
 // =====================
 // NEW PRODUCTION MODULE
