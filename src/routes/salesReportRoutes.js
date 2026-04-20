@@ -3,6 +3,6 @@ import { saveReports } from "../controllers/salesReportController.js";
 
 const router = express.Router();
 
-router.post("/save", saveReports);
+router.post("/bulk", saveReports);
 
 export default router;

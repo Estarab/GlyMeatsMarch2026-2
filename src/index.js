@@ -82,7 +82,7 @@ app.use("/api/plans", planRoutes);
 // reporting & analytics
 app.use("/api/reports", reportRoutes);
 
-app.use("/api/reports", salesReportRoutes);
+app.use("/api/sales", salesReportRoutes);
 
 // =====================
 // HEALTH CHECK
