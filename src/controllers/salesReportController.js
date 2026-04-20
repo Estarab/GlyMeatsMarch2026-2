@@ -2,19 +2,30 @@ import SalesReport from "../models/SalesReport.js";
 
 export const saveReports = async (req, res) => {
   try {
-    const reports = req.body;
+    const sales = req.body;
 
-    if (!Array.isArray(reports)) {
-      return res.status(400).json({ message: "Invalid data format" });
+    // 🔥 FIX: ensure it's array
+    if (!Array.isArray(sales)) {
+      return res.status(400).json({
+        message: "Invalid data format. Expected an array of sales.",
+      });
     }
 
-    await SalesReport.insertMany(reports);
+    const formatted = sales.map((sale) => ({
+      date: sale.createdAt,
+      items: sale.items,
+      total: sale.total,
+      paymentMethod: sale.paymentMethod,
+    }));
+
+    await SalesReport.insertMany(formatted);
 
     res.status(201).json({
-      message: "Reports saved successfully",
-      count: reports.length,
+      message: "Sales synced successfully",
+      count: formatted.length,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
