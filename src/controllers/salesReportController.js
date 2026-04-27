@@ -31,3 +31,13 @@ export const saveReports = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// ✅ NEW: GET REPORTS
+export const getReports = async (req, res) => {
+  try {
+    const reports = await SalesReport.find().sort({ createdAt: -1 });
+    res.json(reports);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
