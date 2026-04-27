@@ -1,20 +1,17 @@
 import mongoose from "mongoose";
 
-const StockMovementSchema = new mongoose.Schema(
+const stockSchema = new mongoose.Schema(
   {
     productId: String,
     productName: String,
     quantityAdded: Number,
     type: { type: String, default: "IN" },
-    transactionId: String,
-    createdAt: { type: Date, default: Date.now },
+    createdAt: String,
   },
   { timestamps: true }
 );
 
-const StockMovement = mongoose.model("StockMovement", StockMovementSchema);
-
-export default StockMovement;
+export default mongoose.model("StockMovement", stockSchema);
 
 
 
