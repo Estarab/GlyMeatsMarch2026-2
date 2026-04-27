@@ -1,4 +1,5 @@
-import StockMovement from "../models/StockMovement.js";
+import stockMovement2 from "../models/stockMovement2.js";
+import StockMovement2 from "../models/stockMovement2.js";
 
 // ================= SAVE STOCK =================
 export const saveStockReports = async (req, res) => {
@@ -17,7 +18,7 @@ export const saveStockReports = async (req, res) => {
       createdAt: item.createdAt,
     }));
 
-    await StockMovement.insertMany(formatted);
+    await stockMovement2.insertMany(formatted);
 
     res.json({
       message: "Stock reports saved successfully",
