@@ -25,6 +25,7 @@ import recipeRoutes from "./routes/recipeRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import salesReportRoutes  from "./routes/salesReportRoutes.js";
 
+import stockRoutes from "./routes/stockRoutes.js";
 
 
 const app = express();
@@ -83,6 +84,8 @@ app.use("/api/plans", planRoutes);
 app.use("/api/reports", reportRoutes);
 
 app.use("/api/sales-reports", salesReportRoutes);
+
+app.use("/api/stock-reports", stockRoutes);
 
 // =====================
 // HEALTH CHECK
