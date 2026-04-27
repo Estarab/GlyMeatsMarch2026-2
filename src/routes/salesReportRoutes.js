@@ -1,5 +1,5 @@
 import express from "express";
-import { saveReports } from "../controllers/salesReportController.js";
+import { saveReports, getReports, } from "../controllers/salesReportController.js";
 
 const router = express.Router();
 
