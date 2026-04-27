@@ -12,13 +12,15 @@ export const saveReports = async (req, res) => {
     }
 
     const formatted = sales.map((sale) => ({
-      date: sale.createdAt,
-      items: sale.items,
-      total: sale.total,
-      paymentMethod: sale.paymentMethod,
-    }));
+  date: sale.date,
+  time: sale.time,
+  items: sale.items,
+  total: sale.total,
+  paymentMethod: sale.paymentMethod,
+}));
 
-    await SalesReport.insertMany(formatted);
+    // await SalesReport.insertMany(formatted);
+    await SalesReport.insertMany(formatted, { ordered: false });
 
     res.status(201).json({
       message: "Sales synced successfully",
