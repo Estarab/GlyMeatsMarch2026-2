@@ -4,11 +4,22 @@ import { PettyCashFloat } from "../models/PettyCashFloat.js";
 /* =========================================
    GET ALL PENDING EXPENSES
 ========================================= */
+// export const getExpenses = async (req, res) => {
+//   try {
+//     const expenses = await PettyCashExpense.find({
+//       status: "pending",
+//     }).sort({ createdAt: -1 });
+
+//     res.json(expenses);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const getExpenses = async (req, res) => {
   try {
-    const expenses = await PettyCashExpense.find({
-      status: "pending",
-    }).sort({ createdAt: -1 });
+    const expenses = await PettyCashExpense.find()
+      .sort({ createdAt: -1 });
 
     res.json(expenses);
   } catch (err) {
@@ -103,6 +114,40 @@ export const createFloat = async (req, res) => {
 /* =========================================
    CREATE PETTY CASH EXPENSE
 ========================================= */
+// export const createExpense = async (req, res) => {
+//   try {
+//     const { amount, reason, floatId } = req.body;
+
+//     if (!amount || amount <= 0 || !reason || !floatId) {
+//       return res.status(400).json({ message: "Missing or invalid fields" });
+//     }
+
+//     const float = await PettyCashFloat.findById(floatId);
+//     if (!float) {
+//       return res.status(404).json({ message: "Float not found" });
+//     }
+
+//     if (amount > float.remainingBalance) {
+//       return res.status(400).json({ message: "Insufficient float balance" });
+//     }
+
+//     const expense = await PettyCashExpense.create({
+//       amount,
+//       reason,
+//       floatId,
+//       status: "pending",
+//     });
+
+//     // Deduct from float immediately
+//     float.remainingBalance -= amount;
+//     await float.save();
+
+//     res.status(201).json(expense);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const createExpense = async (req, res) => {
   try {
     const { amount, reason, floatId } = req.body;
@@ -116,10 +161,7 @@ export const createExpense = async (req, res) => {
       return res.status(404).json({ message: "Float not found" });
     }
 
-    if (amount > float.remainingBalance) {
-      return res.status(400).json({ message: "Insufficient float balance" });
-    }
-
+    // ❗ DO NOT deduct here anymore
     const expense = await PettyCashExpense.create({
       amount,
       reason,
@@ -127,15 +169,12 @@ export const createExpense = async (req, res) => {
       status: "pending",
     });
 
-    // Deduct from float immediately
-    float.remainingBalance -= amount;
-    await float.save();
-
     res.status(201).json(expense);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 export const getPettyCashSummary = async (req, res) => {
   try {
