@@ -31,7 +31,7 @@ import recipeRoutes from "./routes/recipeRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import salesReportRoutes  from "./routes/salesReportRoutes.js";
 
-import stockRoutes from "./routes/stockReportRoutes.js";
+// import stockRoutes from "./routes/stockReportRoutes.js";
 
 
 const app = express();
