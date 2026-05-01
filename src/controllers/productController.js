@@ -14,8 +14,8 @@ export const getProducts = async (req, res) => {
 // POST /api/products
 export const createProduct = async (req, res) => {
   try {
-    const { name, category, price, stock, code } = req.body;
-    const product = new Product({ name, category, price, stock, code });
+    const { name, category, price, buyingPrice,  stock, code } = req.body;
+    const product = new Product({ name, category, price, buyingPrice,  stock, code });
     await product.save();
     res.status(201).json(product);
   } catch (error) {
