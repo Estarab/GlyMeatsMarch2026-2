@@ -15,6 +15,8 @@ import saleRoutes from "./routes/saleRoutes.js";
 import pettyCashRoutes from "./routes/pettyCashRoutes.js";
 import offlineSaleRoutes from "./routes/offlineSaleRoutes.js";
 
+import stockOutRoutes from "./routes/stockOutRoutes.js";
+
 // =====================
 // NEW PRODUCTION MODULE
 // =====================
@@ -86,6 +88,8 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/sales-reports", salesReportRoutes);
 
 app.use("/api/stock-reports", stockRoutes);
+
+app.use("/api/stock-out", stockOutRoutes);
 
 // =====================
 // HEALTH CHECK
