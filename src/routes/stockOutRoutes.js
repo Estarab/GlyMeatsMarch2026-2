@@ -1,10 +1,8 @@
 import express from "express";
-// import Product from "../models/Product.js";
 import { Product } from "../models/Product.js";
 
 const router = express.Router();
 
-// 🔥 BULK STOCK OUT
 router.post("/bulk", async (req, res) => {
   try {
     const items = req.body;
@@ -19,7 +17,7 @@ router.post("/bulk", async (req, res) => {
 
       const updated = await Product.findOneAndUpdate(
         { code: item.code },
-        { $inc: { quantity: -item.qty } },
+        { $inc: { stock: -item.qty } }, // 🔥 FIXED HERE
         { new: true }
       );
 
@@ -27,7 +25,7 @@ router.post("/bulk", async (req, res) => {
         console.log("❌ Product not found:", item.code);
       } else {
         console.log(
-          `✅ Stock reduced: ${item.code} (-${item.qty})`
+          `✅ Stock reduced: ${item.code} (-${item.qty}) | New stock: ${updated.stock}`
         );
       }
     }
