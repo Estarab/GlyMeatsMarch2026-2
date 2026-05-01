@@ -17,6 +17,10 @@ import offlineSaleRoutes from "./routes/offlineSaleRoutes.js";
 
 import stockOutRoutes from "./routes/stockOutRoutes.js";
 
+import stockRoutes from "./routes/stock.routes.js";
+
+
+
 // =====================
 // NEW PRODUCTION MODULE
 // =====================
@@ -90,6 +94,8 @@ app.use("/api/sales-reports", salesReportRoutes);
 app.use("/api/stock-reports", stockRoutes);
 
 app.use("/api/stock-out", stockOutRoutes);
+
+app.use("/api/stock", stockRoutes);
 
 // =====================
 // HEALTH CHECK
