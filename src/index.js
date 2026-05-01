@@ -91,7 +91,7 @@ app.use("/api/reports", reportRoutes);
 
 app.use("/api/sales-reports", salesReportRoutes);
 
-app.use("/api/stock-reports", stockRoutes);
+// app.use("/api/stock-reports", stockRoutes);
 
 app.use("/api/stock-out", stockOutRoutes);
 
