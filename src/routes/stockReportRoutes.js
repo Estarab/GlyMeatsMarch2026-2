@@ -3,7 +3,8 @@ import {
   saveStockReports,
   getStockReports,
 } from "../controllers/stockReportController.js";
-import Product from "../models/Product.js";
+// import Product from "../models/Product.js";
+import { Product } from "../models/Product.js";
 
 const router = express.Router();
 
