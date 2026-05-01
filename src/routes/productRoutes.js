@@ -8,9 +8,9 @@ const router = express.Router();
 // Create a new product
 router.post("/", protectRoute, async (req, res) => {
   try {
-    const { name, category, price, description, image, stock, code} = req.body;
+    const { name, category, price, buyingPrice, description, image, stock, code} = req.body;
 
-    if (!name || !category || !price || !stock || !code) {
+    if (!name || !category || !price || !buyingPrice || !stock || !code) {
       return res.status(400).json({ message: "Name, category, and price are required" });
     }
 
@@ -18,6 +18,7 @@ router.post("/", protectRoute, async (req, res) => {
       name,
       category,
       price,
+      buyingPrice,
       description,
       image,
       stock,
