@@ -17,7 +17,7 @@ import offlineSaleRoutes from "./routes/offlineSaleRoutes.js";
 
 import stockOutRoutes from "./routes/stockOutRoutes.js";
 
-import stockRoutes from "./routes/stock.routes.js";
+// import stockRoutes from "./routes/stock.routes.js";
 
 
 
@@ -32,6 +32,7 @@ import planRoutes from "./routes/planRoutes.js";
 import salesReportRoutes  from "./routes/salesReportRoutes.js";
 
 // import stockRoutes from "./routes/stockReportRoutes.js";
+import stockRoutes from "./routes/stock.js";
 
 
 const app = express();
