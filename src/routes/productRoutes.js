@@ -35,7 +35,7 @@ router.post("/",  async (req, res) => {
       image,
       stock: parseInt(stock, 10),
       code,
-      createdBy: req.user._id,
+      // createdBy: req.user._id,
     });
 
     res.status(201).json(product);
@@ -117,7 +117,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // =====================
-// DELETE PRODUCT
+// DELETE PRODUCT 
 // =====================
 router.delete("/:id", protectRoute, async (req, res) => {
   try {
