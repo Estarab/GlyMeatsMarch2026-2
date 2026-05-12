@@ -7,7 +7,7 @@ const router = express.Router();
 // =====================
 // CREATE PRODUCT
 // =====================
-router.post("/", protectRoute, async (req, res) => {
+router.post("/",  async (req, res) => {
   try {
     const {
       name,
@@ -66,7 +66,7 @@ router.get("/", async (req, res) => {
 // =====================
 // UPDATE PRODUCT
 // =====================
-router.put("/:id", protectRoute, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const {
       name,
