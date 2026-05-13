@@ -26,6 +26,9 @@ export const saveReports = async (req, res) => {
 
       items: Array.isArray(sale.items) ? sale.items : [],
 
+      subtotal: sale.subtotal || 0,
+      discount: sale.discount || 0,
+
       total: sale.total || 0,
       paymentMethod: sale.paymentMethod || "cash",
 
