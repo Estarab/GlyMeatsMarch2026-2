@@ -19,7 +19,7 @@ export const getSales = async (req, res) => {
 // POST /api/sales (FIXED FOR OFFLINE SYNC)
 export const createSale = async (req, res) => {
   try {
-    const { items, total, paymentMethod, userId, transactionId } = req.body;
+    const { items, subtotal, discount, total, paymentMethod, userId, transactionId } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: "No items in sale" });
@@ -84,6 +84,8 @@ export const createSale = async (req, res) => {
       user: userId || req.user?._id,
       transactionId,
       items: normalizedItems,
+      subtotal: subtotal || (total + (discount || 0)), 
+      discount: discount || 0, 
       total,
       paymentMethod,
     });
