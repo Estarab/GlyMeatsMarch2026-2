@@ -163,9 +163,14 @@ router.put("/:id", async (req, res) => {
 // =====================
 // DELETE PRODUCT 
 // =====================
+// =====================
+// DELETE PRODUCT
+// =====================
 router.delete("/:id", async (req, res) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    const deletedProduct = await Product.findByIdAndDelete(
+      req.params.id
+    );
 
     if (!deletedProduct) {
       return res.status(404).json({
@@ -174,10 +179,12 @@ router.delete("/:id", async (req, res) => {
     }
 
     res.json({
+      success: true,
       message: "Product deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting product:", error);
+
     res.status(500).json({
       message: "Failed to delete product",
       error: error.message,

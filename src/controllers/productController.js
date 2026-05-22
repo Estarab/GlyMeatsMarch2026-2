@@ -82,13 +82,30 @@ export const updateProduct = async (req, res) => {
 };
 
 // DELETE /api/products/:id
+// DELETE /api/products/:id
 export const deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ message: "Product deleted" });
+    const deletedProduct = await Product.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!deletedProduct) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Product deleted successfully",
+    });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: "Failed to delete product" });
+
+    res.status(400).json({
+      message: "Failed to delete product",
+      error: error.message,
+    });
   }
 };
 
