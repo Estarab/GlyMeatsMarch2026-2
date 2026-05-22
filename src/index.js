@@ -34,6 +34,8 @@ import salesReportRoutes  from "./routes/salesReportRoutes.js";
 // import stockRoutes from "./routes/stockReportRoutes.js";
 import stockRoutes from "./routes/stock.js";
 
+import businessInsightsRoutes from "./routes/businessInsights.routes.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -97,6 +99,8 @@ app.use("/api/sales-reports", salesReportRoutes);
 app.use("/api/stock-out", stockOutRoutes);
 
 app.use("/api/stock", stockRoutes);
+
+app.use("/api/business-insights", businessInsightsRoutes);
 
 // =====================
 // HEALTH CHECK
