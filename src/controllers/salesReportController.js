@@ -106,24 +106,24 @@ export const getReportById = async (req, res) => {
  * OPTIONAL: DELETE REPORT
  * =========================
  */
-export const deleteReport = async (req, res) => {
+export const deleteTransactionRow = async (req, res) => {
   try {
-    const deleted = await SalesReport.findOneAndDelete({
-      transactionId: req.params.id,
-    });
+    // Looks up and deletes just the single document row using its unique MongoDB ID
+    const deletedTx = await SalesReport.findByIdAndDelete(req.params.id);
 
-    if (!deleted) {
+    if (!deletedTx) {
       return res.status(404).json({
-        message: "Report not found",
+        message: "Transaction not found in database",
       });
     }
 
     return res.json({
-      message: "Report deleted successfully",
+      message: "Single transaction deleted successfully",
     });
   } catch (err) {
+    console.log("DELETE TRANSACTION ERROR:", err);
     return res.status(500).json({
-      message: "Error deleting report",
+      message: "Error deleting transaction record",
       error: err.message,
     });
   }
