@@ -163,7 +163,7 @@ router.put("/:id", async (req, res) => {
 // =====================
 // DELETE PRODUCT 
 // =====================
-router.delete("/:id", protectRoute, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
 
