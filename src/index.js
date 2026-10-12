@@ -37,7 +37,7 @@
   import businessInsightsRoutes from "./routes/businessInsights.routes.js";
 
   import returnRoutes from "./routes/returnRoutes.js";
-  import mobileMoneyTransactionRoutes from "./routes/mobileMoneyTransactionRoutes";
+  import mobileMoneyTransactionRoutes from "./routes/mobileMoneyTransactionRoutes.js";
 
 
   const app = express();
