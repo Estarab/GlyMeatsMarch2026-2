@@ -22,6 +22,7 @@ const mobileMoneyTransactionSchema = new mongoose.Schema(
     productsPurchased: { type: String, required: true, trim: true },
     productAmount: { type: Number, required: true, min: 0 },
     parcelAmount: { type: Number, required: true, min: 0 },
+    withdrawCharge: { type: Number, required: true, min: 0 },
     totalAmount: { type: Number, required: true, min: 0 },
     status: {
       type: String,

@@ -42,6 +42,7 @@ export const createMobileMoneyTransaction = async (req, res) => {
       productsPurchased,
       productAmount,
       parcelAmount,
+      withdrawCharge,
       totalAmount,
       receivedAt,
     } = req.body || {};
@@ -84,6 +85,7 @@ export const createMobileMoneyTransaction = async (req, res) => {
 
     const product = roundMoney(productAmount);
     const parcel = roundMoney(parcelAmount);
+    const withdraw = roundMoney(withdrawCharge);
     const total = roundMoney(totalAmount);
     if (total <= 0) {
       return res.status(400).json({ success: false, message: "The total amount received must be greater than zero." });
@@ -124,6 +126,7 @@ export const createMobileMoneyTransaction = async (req, res) => {
       productsPurchased: productsPurchased.trim(),
       productAmount: product,
       parcelAmount: parcel,
+      withdrawCharge: withdraw,
       totalAmount: total,
       receivedAt: parsedReceivedAt,
     });
@@ -190,11 +193,12 @@ export const getMobileMoneyTransactions = async (req, res) => {
       if (record.status === "RECEIVED") {
         acc.productAmount = roundMoney(acc.productAmount + Number(record.productAmount || 0));
         acc.parcelAmount = roundMoney(acc.parcelAmount + Number(record.parcelAmount || 0));
+        acc.withdrawCharge = roundMoney(acc.withdrawCharge, + Number(record.withdrawCharge || 0));
         acc.totalAmount = roundMoney(acc.totalAmount + Number(record.totalAmount || 0));
         acc.transactionCount += 1;
       }
       return acc;
-    }, { productAmount: 0, parcelAmount: 0, totalAmount: 0, transactionCount: 0 });
+    }, { productAmount: 0, parcelAmount: 0, withdrawCharge: 0 , totalAmount: 0, transactionCount: 0 });
 
     return res.json({ success: true, count: records.length, summary, data: records });
   } catch (error) {
