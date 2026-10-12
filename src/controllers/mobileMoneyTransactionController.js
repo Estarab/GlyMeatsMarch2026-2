@@ -1,11 +1,17 @@
-const MobileMoneyTransaction = require("../models/MobileMoneyTransaction");
 
-const roundMoney = (value) => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+import MobileMoneyTransaction from "../models/MobileMoneyTransaction.js";
+
+const roundMoney = (value) =>
+  Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+
 const isNonNegativeMoney = (value) =>
-  value !== undefined && value !== null && value !== "" &&
-  Number.isFinite(Number(value)) && Number(value) >= 0;
+  value !== undefined &&
+  value !== null &&
+  value !== "" &&
+  Number.isFinite(Number(value)) &&
+  Number(value) >= 0;
 
-exports.createMobileMoneyTransaction = async (req, res) => {
+export const createMobileMoneyTransaction = async (req, res) => {
   try {
     const {
       transactionId,
@@ -24,18 +30,43 @@ exports.createMobileMoneyTransaction = async (req, res) => {
     } = req.body || {};
 
     if (!transactionId || typeof transactionId !== "string") {
-      return res.status(400).json({ success: false, message: "transactionId is required." });
-    }
-
-    const allowedProviders = ["AIRTEL_MONEY", "MTN_MOMO", "ZAMTEL_KWACHA", "OTHER"];
-    if (!allowedProviders.includes(provider)) {
-      return res.status(400).json({ success: false, message: "Select a valid mobile money provider." });
-    }
-
-    if (!isNonNegativeMoney(productAmount) || !isNonNegativeMoney(parcelAmount)) {
       return res.status(400).json({
         success: false,
-        message: "Product and parcel amounts must be valid non-negative numbers.",
+        message: "transactionId is required.",
+      });
+    }
+
+    const normalizedTransactionId = transactionId.trim();
+
+    if (!normalizedTransactionId) {
+      return res.status(400).json({
+        success: false,
+        message: "transactionId is required.",
+      });
+    }
+
+    const allowedProviders = [
+      "AIRTEL_MONEY",
+      "MTN_MOMO",
+      "ZAMTEL_KWACHA",
+      "OTHER",
+    ];
+
+    if (!allowedProviders.includes(provider)) {
+      return res.status(400).json({
+        success: false,
+        message: "Select a valid mobile money provider.",
+      });
+    }
+
+    if (
+      !isNonNegativeMoney(productAmount) ||
+      !isNonNegativeMoney(parcelAmount)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Product and parcel amounts must be valid non-negative numbers.",
       });
     }
 
@@ -43,9 +74,13 @@ exports.createMobileMoneyTransaction = async (req, res) => {
     const parcel = roundMoney(parcelAmount);
     const calculatedTotal = roundMoney(product + parcel);
 
-    // The server calculates the total to prevent a client sending an inconsistent total.
-    if (totalAmount !== undefined && totalAmount !== null &&
-        (!isNonNegativeMoney(totalAmount) || roundMoney(totalAmount) !== calculatedTotal)) {
+    // The server calculates the total to prevent inconsistent client values.
+    if (
+      totalAmount !== undefined &&
+      totalAmount !== null &&
+      (!isNonNegativeMoney(totalAmount) ||
+        roundMoney(totalAmount) !== calculatedTotal)
+    ) {
       return res.status(400).json({
         success: false,
         message: "totalAmount must equal productAmount + parcelAmount.",
@@ -53,10 +88,16 @@ exports.createMobileMoneyTransaction = async (req, res) => {
     }
 
     if (product === 0 && parcel === 0) {
-      return res.status(400).json({ success: false, message: "The transaction total must be greater than zero." });
+      return res.status(400).json({
+        success: false,
+        message: "The transaction total must be greater than zero.",
+      });
     }
 
-    const existing = await MobileMoneyTransaction.findOne({ transactionId });
+    const existing = await MobileMoneyTransaction.findOne({
+      transactionId: normalizedTransactionId,
+    });
+
     if (existing) {
       return res.status(200).json({
         success: true,
@@ -66,25 +107,46 @@ exports.createMobileMoneyTransaction = async (req, res) => {
       });
     }
 
-    // Avoid duplicate provider references when a reference was supplied.
-    if (transactionReference.trim()) {
-      const duplicateReference = await MobileMoneyTransaction.findOne({
-        provider,
-        transactionReference: transactionReference.trim(),
-        status: "RECEIVED",
-      });
+    const normalizedReference = String(
+      transactionReference || ""
+    ).trim();
+
+    // Prevent duplicate provider references when supplied.
+    if (normalizedReference) {
+      const duplicateReference =
+        await MobileMoneyTransaction.findOne({
+          provider,
+          transactionReference: normalizedReference,
+          status: "RECEIVED",
+        });
+
       if (duplicateReference) {
         return res.status(409).json({
           success: false,
-          message: "That provider transaction reference has already been recorded.",
+          message:
+            "That provider transaction reference has already been recorded.",
           data: duplicateReference,
         });
       }
     }
 
+    // Validate the optional date before saving.
+    let parsedReceivedAt = new Date();
+
+    if (receivedAt !== undefined && receivedAt !== null && receivedAt !== "") {
+      parsedReceivedAt = new Date(receivedAt);
+
+      if (Number.isNaN(parsedReceivedAt.getTime())) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid receivedAt date.",
+        });
+      }
+    }
+
     const record = await MobileMoneyTransaction.create({
-      transactionId: transactionId.trim(),
-      transactionReference: String(transactionReference || "").trim(),
+      transactionId: normalizedTransactionId,
+      transactionReference: normalizedReference,
       provider,
       payerName,
       payerPhone,
@@ -95,7 +157,7 @@ exports.createMobileMoneyTransaction = async (req, res) => {
       parcelNumber,
       notes,
       recordedBy,
-      receivedAt: receivedAt ? new Date(receivedAt) : new Date(),
+      receivedAt: parsedReceivedAt,
     });
 
     return res.status(201).json({
@@ -111,98 +173,205 @@ exports.createMobileMoneyTransaction = async (req, res) => {
         message: "This transaction was already recorded.",
       });
     }
+
     console.error("createMobileMoneyTransaction:", error);
-    return res.status(500).json({ success: false, message: "Could not record mobile money transaction." });
+
+    return res.status(500).json({
+      success: false,
+      message: "Could not record mobile money transaction.",
+    });
   }
 };
 
-exports.getMobileMoneyTransactions = async (req, res) => {
+export const getMobileMoneyTransactions = async (req, res) => {
   try {
     const { from, to, provider, status, search } = req.query;
     const query = {};
 
-    if (provider && provider !== "ALL") query.provider = provider;
-    if (status && status !== "ALL") query.status = status;
+    if (provider && provider !== "ALL") {
+      query.provider = provider;
+    }
+
+    if (status && status !== "ALL") {
+      query.status = status;
+    }
 
     if (from || to) {
       query.receivedAt = {};
+
       if (from) {
         const fromDate = new Date(from);
+
         if (Number.isNaN(fromDate.getTime())) {
-          return res.status(400).json({ success: false, message: "Invalid from date." });
+          return res.status(400).json({
+            success: false,
+            message: "Invalid from date.",
+          });
         }
+
         fromDate.setHours(0, 0, 0, 0);
         query.receivedAt.$gte = fromDate;
       }
+
       if (to) {
         const toDate = new Date(to);
+
         if (Number.isNaN(toDate.getTime())) {
-          return res.status(400).json({ success: false, message: "Invalid to date." });
+          return res.status(400).json({
+            success: false,
+            message: "Invalid to date.",
+          });
         }
+
         toDate.setHours(23, 59, 59, 999);
         query.receivedAt.$lte = toDate;
       }
     }
 
     if (search && search.trim()) {
-      const safeSearch = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // Escape regex metacharacters so searches are treated as literal text.
+      const safeSearch = search
+        .trim()
+        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
       query.$or = [
-        { transactionReference: { $regex: safeSearch, $options: "i" } },
-        { payerName: { $regex: safeSearch, $options: "i" } },
-        { payerPhone: { $regex: safeSearch, $options: "i" } },
-        { parcelNumber: { $regex: safeSearch, $options: "i" } },
-        { saleTransactionId: { $regex: safeSearch, $options: "i" } },
+        {
+          transactionReference: {
+            $regex: safeSearch,
+            $options: "i",
+          },
+        },
+        {
+          payerName: {
+            $regex: safeSearch,
+            $options: "i",
+          },
+        },
+        {
+          payerPhone: {
+            $regex: safeSearch,
+            $options: "i",
+          },
+        },
+        {
+          parcelNumber: {
+            $regex: safeSearch,
+            $options: "i",
+          },
+        },
+        {
+          saleTransactionId: {
+            $regex: safeSearch,
+            $options: "i",
+          },
+        },
       ];
     }
 
-    const records = await MobileMoneyTransaction.find(query).sort({ receivedAt: -1 }).limit(1000).lean();
+    const records = await MobileMoneyTransaction.find(query)
+      .sort({ receivedAt: -1 })
+      .limit(1000)
+      .lean();
+
     const summary = records.reduce(
       (acc, record) => {
         if (record.status === "RECEIVED") {
-          acc.productAmount = roundMoney(acc.productAmount + record.productAmount);
-          acc.parcelAmount = roundMoney(acc.parcelAmount + record.parcelAmount);
-          acc.totalAmount = roundMoney(acc.totalAmount + record.totalAmount);
+          acc.productAmount = roundMoney(
+            acc.productAmount + record.productAmount
+          );
+
+          acc.parcelAmount = roundMoney(
+            acc.parcelAmount + record.parcelAmount
+          );
+
+          acc.totalAmount = roundMoney(
+            acc.totalAmount + record.totalAmount
+          );
+
           acc.transactionCount += 1;
         }
+
         return acc;
       },
-      { productAmount: 0, parcelAmount: 0, totalAmount: 0, transactionCount: 0 }
+      {
+        productAmount: 0,
+        parcelAmount: 0,
+        totalAmount: 0,
+        transactionCount: 0,
+      }
     );
 
-    return res.json({ success: true, count: records.length, summary, data: records });
+    return res.json({
+      success: true,
+      count: records.length,
+      summary,
+      data: records,
+    });
   } catch (error) {
     console.error("getMobileMoneyTransactions:", error);
-    return res.status(500).json({ success: false, message: "Could not load mobile money transactions." });
+
+    return res.status(500).json({
+      success: false,
+      message: "Could not load mobile money transactions.",
+    });
   }
 };
 
-exports.getMobileMoneyTransactionById = async (req, res) => {
+export const getMobileMoneyTransactionById = async (req, res) => {
   try {
-    const record = await MobileMoneyTransaction.findById(req.params.id).lean();
-    if (!record) return res.status(404).json({ success: false, message: "Transaction not found." });
-    return res.json({ success: true, data: record });
+    const record = await MobileMoneyTransaction.findById(
+      req.params.id
+    ).lean();
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found.",
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: record,
+    });
   } catch (error) {
     console.error("getMobileMoneyTransactionById:", error);
-    return res.status(500).json({ success: false, message: "Could not load transaction." });
+
+    return res.status(500).json({
+      success: false,
+      message: "Could not load transaction.",
+    });
   }
 };
 
 // Keep an audit trail: reverse a record instead of deleting it.
-exports.reverseMobileMoneyTransaction = async (req, res) => {
+export const reverseMobileMoneyTransaction = async (req, res) => {
   try {
     const record = await MobileMoneyTransaction.findByIdAndUpdate(
       req.params.id,
       { status: "REVERSED" },
       { new: true, runValidators: true }
     );
-    if (!record) return res.status(404).json({ success: false, message: "Transaction not found." });
-    return res.json({ success: true, message: "Transaction marked as reversed.", data: record });
+
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found.",
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Transaction marked as reversed.",
+      data: record,
+    });
   } catch (error) {
     console.error("reverseMobileMoneyTransaction:", error);
-    return res.status(500).json({ success: false, message: "Could not reverse transaction." });
+
+    return res.status(500).json({
+      success: false,
+      message: "Could not reverse transaction.",
+    });
   }
 };
 
-function roundMoney(value) {
-  return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
-}
