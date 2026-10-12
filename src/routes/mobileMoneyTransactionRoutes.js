@@ -1,4 +1,3 @@
-
 import express from "express";
 import {
   createMobileMoneyTransaction,
@@ -9,9 +8,9 @@ import {
 
 const router = express.Router();
 
-router.get("/", getMobileMoneyTransactions);
 router.post("/", createMobileMoneyTransaction);
+router.get("/", getMobileMoneyTransactions);
 router.get("/:id", getMobileMoneyTransactionById);
-router.post("/:id/reverse", reverseMobileMoneyTransaction);
+router.patch("/:id/reverse", reverseMobileMoneyTransaction);
 
 export default router;
