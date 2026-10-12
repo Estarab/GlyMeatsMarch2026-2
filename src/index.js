@@ -1,136 +1,139 @@
-import express from "express";
-import cors from "cors";
-import "dotenv/config";
-import job from "./lib/cron.js";
+  import express from "express";
+  import cors from "cors";
+  import "dotenv/config";
+  import job from "./lib/cron.js";
 
-import { connectDB } from "./lib/db.js";
+  import { connectDB } from "./lib/db.js";
 
-// =====================
-// EXISTING ROUTES
-// =====================
-import authRoutes from "./routes/authRoutes.js";
-import bookRoutes from "./routes/bookRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import saleRoutes from "./routes/saleRoutes.js";
-import pettyCashRoutes from "./routes/pettyCashRoutes.js";
-import offlineSaleRoutes from "./routes/offlineSaleRoutes.js";
+  // =====================
+  // EXISTING ROUTES
+  // =====================
+  import authRoutes from "./routes/authRoutes.js";
+  import bookRoutes from "./routes/bookRoutes.js";
+  import productRoutes from "./routes/productRoutes.js";
+  import saleRoutes from "./routes/saleRoutes.js";
+  import pettyCashRoutes from "./routes/pettyCashRoutes.js";
+  import offlineSaleRoutes from "./routes/offlineSaleRoutes.js";
 
-import stockOutRoutes from "./routes/stockOutRoutes.js";
+  import stockOutRoutes from "./routes/stockOutRoutes.js";
 
-// import stockRoutes from "./routes/stock.routes.js";
-
-
-
-// =====================
-// NEW PRODUCTION MODULE
-// =====================
-import productionRoutes from "./routes/productionRoutes.js";
-import reportRoutes from "./routes/reportRoutes.js";
-import materialRoutes from "./routes/materialRoutes.js";
-import recipeRoutes from "./routes/recipeRoutes.js";
-import planRoutes from "./routes/planRoutes.js";
-import salesReportRoutes  from "./routes/salesReportRoutes.js";
-
-// import stockRoutes from "./routes/stockReportRoutes.js";
-import stockRoutes from "./routes/stock.js";
-
-import businessInsightsRoutes from "./routes/businessInsights.routes.js";
-
-import returnRoutes from "./routes/returnRoutes.js";
+  // import stockRoutes from "./routes/stock.routes.js";
 
 
-const app = express();
-const PORT = process.env.PORT || 3000;
 
-// =====================
-// MIDDLEWARE
-// =====================
-app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+  // =====================
+  // NEW PRODUCTION MODULE
+  // =====================
+  import productionRoutes from "./routes/productionRoutes.js";
+  import reportRoutes from "./routes/reportRoutes.js";
+  import materialRoutes from "./routes/materialRoutes.js";
+  import recipeRoutes from "./routes/recipeRoutes.js";
+  import planRoutes from "./routes/planRoutes.js";
+  import salesReportRoutes  from "./routes/salesReportRoutes.js";
 
-// =====================
-// CRON JOBS
-// =====================
-job.start();
+  // import stockRoutes from "./routes/stockReportRoutes.js";
+  import stockRoutes from "./routes/stock.js";
 
-// =====================
-// API ROUTES
-// =====================
+  import businessInsightsRoutes from "./routes/businessInsights.routes.js";
 
-// ---------- AUTH ----------
-app.use("/api/auth", authRoutes);
+  import returnRoutes from "./routes/returnRoutes.js";
+  import mobileMoneyTransactionRoutes from "./routes/mobileMoneyTransactionRoutes";
 
-// ---------- DEMO BOOKS ----------
-app.use("/api/books", bookRoutes);
 
-// ---------- POS ----------
-app.use("/api/products", productRoutes);
-app.use("/api/sales", saleRoutes);
+  const app = express();
+  const PORT = process.env.PORT || 3000;
 
-// ---------- PETTY CASH ----------
-app.use("/api/pettycash", pettyCashRoutes);
+  // =====================
+  // MIDDLEWARE
+  // =====================
+  app.use(express.json());
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE"],
+    })
+  );
 
-// =====================
-// MANUFACTURING / PRODUCTION
-// =====================
+  // =====================
+  // CRON JOBS
+  // =====================
+  job.start();
 
-// raw materials inventory
-app.use("/api/materials", materialRoutes);
+  // =====================
+  // API ROUTES
+  // =====================
 
-// product recipes / bill of materials
-app.use("/api/recipes", recipeRoutes);
+  // ---------- AUTH ----------
+  app.use("/api/auth", authRoutes);
 
-// create and process production batches
-app.use("/api/production", productionRoutes);
+  // ---------- DEMO BOOKS ----------
+  app.use("/api/books", bookRoutes);
 
-// production planning calendar
-app.use("/api/plans", planRoutes);
+  // ---------- POS ----------
+  app.use("/api/products", productRoutes);
+  app.use("/api/sales", saleRoutes);
 
-// reporting & analytics
-app.use("/api/reports", reportRoutes);
+  // ---------- PETTY CASH ----------
+  app.use("/api/pettycash", pettyCashRoutes);
 
-app.use("/api/sales-reports", salesReportRoutes);
+  // =====================
+  // MANUFACTURING / PRODUCTION
+  // =====================
 
-// app.use("/api/stock-reports", stockRoutes);
+  // raw materials inventory
+  app.use("/api/materials", materialRoutes);
 
-app.use("/api/stock-out", stockOutRoutes);
+  // product recipes / bill of materials
+  app.use("/api/recipes", recipeRoutes);
 
-app.use("/api/stock", stockRoutes);
+  // create and process production batches
+  app.use("/api/production", productionRoutes);
 
-app.use("/api/business-insights", businessInsightsRoutes);
+  // production planning calendar
+  app.use("/api/plans", planRoutes);
 
-app.use("/api/returns", returnRoutes);
+  // reporting & analytics
+  app.use("/api/reports", reportRoutes);
 
-// =====================
-// HEALTH CHECK
-// =====================
-app.get("/", (req, res) => {
-  res.send("POS + Manufacturing API is running");
-});
+  app.use("/api/sales-reports", salesReportRoutes);
 
-// =====================
-// ERROR HANDLER
-// =====================
-app.use((err, req, res, next) => {
-  console.error("Server Error:", err);
-  res.status(500).json({
-    message: "Internal server error",
-    error: err.message,
+  // app.use("/api/stock-reports", stockRoutes);
+
+  app.use("/api/stock-out", stockOutRoutes);
+
+  app.use("/api/stock", stockRoutes);
+
+  app.use("/api/business-insights", businessInsightsRoutes);
+
+  app.use("/api/returns", returnRoutes);
+
+  app.use("/api/mobile-money-transactions", mobileMoneyTransactionRoutes);
+
+  // =====================
+  // HEALTH CHECK
+  // =====================
+  app.get("/", (req, res) => {
+    res.send("POS + Manufacturing API is running");
   });
-});
 
-// =====================
-// START SERVER
-// =====================
-app.listen(PORT, async () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  await connectDB();
-});
+  // =====================
+  // ERROR HANDLER
+  // =====================
+  app.use((err, req, res, next) => {
+    console.error("Server Error:", err);
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
+  });
+
+  // =====================
+  // START SERVER
+  // =====================
+  app.listen(PORT, async () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    await connectDB();
+  });
 
 
 
